@@ -1,0 +1,21 @@
+# Ignore data files
+data/
+
+# Ignore output directories
+qc/
+logs/
+assembly/
+evaluation/
+polishing/
+
+# Ignore environment files
+envs/
+.ipynb_checkpoints
+.virtual_documents
+.snakemake
+# Ignore temporary files
+*.tmp
+*.temp
+
+#other files
+try.sh
