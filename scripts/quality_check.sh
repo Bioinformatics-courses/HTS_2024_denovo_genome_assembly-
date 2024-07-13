@@ -27,5 +27,4 @@ done
 echo "Running MultiQC to aggregate fastqc output of paired-end Illumina reads"
 multiqc $OUT_DIR/$PAIRED_READ_PREFIX* -o $MULTIQC_OUT
 
-echo "QC process completed"
-
+echo "QC check process completed"
