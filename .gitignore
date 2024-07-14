@@ -2,9 +2,8 @@
 data/
 
 # Ignore output directories
-qc/
-logs/
-assembly/
+quality_check_reports/
+assembly_output/
 evaluation/
 polishing/
 
