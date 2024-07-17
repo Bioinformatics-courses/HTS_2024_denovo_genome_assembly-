@@ -7,8 +7,8 @@ assembly_output/
 mapping/
 polishing/
 bandage_output/
-# Ignore environment files
-envs/
+
+
 .ipynb_checkpoints
 .virtual_documents
 .snakemake
