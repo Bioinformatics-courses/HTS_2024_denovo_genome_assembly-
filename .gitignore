@@ -7,7 +7,7 @@ assembly_output/
 mapping/
 polishing/
 bandage_output/
-
+evaluation_output/
 
 .ipynb_checkpoints
 .virtual_documents
