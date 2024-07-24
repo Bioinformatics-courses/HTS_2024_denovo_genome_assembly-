@@ -66,6 +66,10 @@ sudo chmod +x quality_check.sh
 >
 
 Taking a look at our script (properly commented of course), the script sets up the working directories and creates our output directory quality_check_reports/ after which it loops over the files in dir/raw and runs fastqc on them. It also aggregates the fastqc report of the paired-end reads with MultiQC.
-Visualizing the output
+Visualizing the output of our long read quality check (SRR29409521_fastqc.html)
+<center><img src="_static/long_read.png" width="80%"></center>
+
+
+
 
 
