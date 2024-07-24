@@ -66,8 +66,16 @@ sudo chmod +x quality_check.sh
 >
 
 Taking a look at our script (properly commented of course), the script sets up the working directories and creates our output directory quality_check_reports/ after which it loops over the files in dir/raw and runs fastqc on them. It also aggregates the fastqc report of the paired-end reads with MultiQC.
-Visualizing the output of our long read quality check (SRR29409521_fastqc.html)
-<center><img src="_static/long_read.png" width="80%"></center>
+
+Visualizing the output of our long read quality check (denovo/quality_check_report/fastqc_output/SRR29409521_fastqc.html). The report shows overall high per base sequence quality, with median scores above 90 and only a low average dip to 66 towards the end.
+<center><img src="_static/long_read.png" width="90%"></center>
+
+Next, we examine the MultiQC report of our paired-end read (denovo/quality_check_report/multiqc_output/multiqc_report.html). We also see overall good reports here with the mean quality score generally hovering around the 35 mark.
+<center><img src="_static/fastqc_per.png" width="90%"></center>
+
+## Quality Control
+
+
 
 
 
