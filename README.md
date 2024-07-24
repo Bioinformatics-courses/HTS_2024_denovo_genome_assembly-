@@ -8,7 +8,8 @@ This project demonstrates the denovo genome assembly of the WGS of Lactobacillus
 > 
 > This project was demonstrated on a Linux system
 
-Throughout this project, we'll be making use of a couple of tools which will be installed using [conda](https://conda.io/docs/) 
+Throughout this project, we'll be making use of a couple of tools which will be installed using [conda](https://conda.io/docs/).
+
 Clone the github repo in your home folder and set up the working directory and data directory
 ```bash
 cd
@@ -35,7 +36,7 @@ conda activate denovo
 
 ## The Data
 The datasets used for this assemby process are WGS of Lactiplantibacillus plantarum (formerly Lactobacillus plantarum). Since we are going to be doing hybrid assembly, we are using both short and long reads. The datasets here were sequenced from the same biological sample and consits of :
-- A long read PACBIO_SMRT run with the accession number [SRR29409521](https://www.ncbi.nlm.nih.gov/sra/SRX24922988[accn])
+- A long read PACBIO_SMRT run with accession number [SRR29409521](https://www.ncbi.nlm.nih.gov/sra/SRX24922988[accn])
 - Paired-end ILLUMINA short reads with accession number [SRR29409522](https://www.ncbi.nlm.nih.gov/sra/SRX24922987[accn])
 
 They can be sourced from the links provided above, but better still, can be obtained using sra-toolkit
@@ -49,3 +50,22 @@ fasterq-dump data/SRR29409522 --outdir data/raw
 We'll end up with 3 files in the data/raw subdirectory of our working directory, SRR29409521.fastq, SRR29409522_1.fastq and SRR29409522_2.fastq, which are our long read and paired-end short reads respectively.
 
 ## Quality check
+The first script we're going to run is the quality_check.sh. This script runs fastqc on the fastq files in data/raw and generates a fastqc report. It also aggregates the report of the paired-end read with Multiqc.
+
+```bash
+cd scripts
+sudo chmod +x quality_check.sh
+./quality_checks.sh
+```
+
+> **CODE BREAKDOWN**
+> 
+> - **`cd scripts`** - this moves us into our scripts directory
+> - **`sudo chmod +x quality_check.sh`** - grants execute permission to the script
+> - **`./quality_checks.sh`** - executes the script
+>
+
+Taking a look at our script (properly commented of course), the script sets up the working directories and creates our output directory quality_check_reports/ after which it loops over the files in dir/raw and runs fastqc on them. It also aggregates the fastqc report of the paired-end reads with MultiQC.
+Visualizing the output
+
+
