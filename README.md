@@ -86,12 +86,14 @@ sudo chmod +x quality_control.sh
 ./quality_control.sh
 ```
 This will generate 4 outputs for the short reads: 2 paired and 2 unpaired reads for our fastp QC, and a filtered long read file from the Filtlong QC, all located in the corresponding subdirectories under data/QC.
-The unpaired reads from the fastpc QC are very small compared to the the paired reads and that is very good. Taking a look at the fastp report generated, we can see that not much changed.
+The unpaired reads from the fastpc QC are very small compared to the the paired reads and that is very good. Taking a look below at the fastp report generated, we can see that not much changed.
+<center><img src="_static/fastp.png" width="90%"></center>
 
 ## Assembly
 For the assembly, we'll be running the assembly.sh script in the scripts folder. The primary tool in this script is [Unicycler](https://github.com/rrwick/Unicycler). Unicycler is an assembly pipeline for bacterial genomes and comes highly recommended for hybrid assembly of bacteria.
 Unicycler uses [SPAdes] to produce graphs, which are made by performing a de Bruijn graph assembly with a range of different k-mer sizes. After generating a short-read assembly graph, Unicycler then uses the long reads to scaffold the graph to completion. It performs best when the short reads are deep and have even coverage.
-Unicycler hybrid assembly is run by passing our paired-end short reads, and our unpaired(if available) and the final secret sauce, the long read, to Unicycler, which is exactly what we have in out script. We run the script using:
+
+The assembly process is pretty straight-forward: Unicycler hybrid assembly is run by passing our paired-end short reads, and our unpaired(if available) and the final secret sauce, the long read, to Unicycler, which is exactly what we have in out script. We run the script using:
 
 ```bash
 cd scripts # assuming we're in our working folder
@@ -102,7 +104,34 @@ sudo chmod +x assembly.sh
 Unicycler takes a long time to run hybrid assembly; with 4 threads given on my i5 5th gen cpu with 8gbs of ram, it took 11 hours to complete the hybrid assembly! The output is stored in assembly_output/ where we have the most important files: assembly.fasta (our assembled genome), assembly.gfa (our assembly graph) and unicycler.log (log file).
 
 ## Polishing
+Some papers mention polishing a de novo hybrid assembly of a bacterial genome may be necessary, so here we go. We'll be using a tool for this in the script called [Pilon](https://github.com/broadinstitute/pilon/wiki). Pilon requires as input a FASTA( our assembly.fasta) file of the genome along with one or more BAM files of reads aligned to the input FASTA file (we'll be generating the BAM file and aligning using [bwa](https://github.com/lh3/bwa) and [samtools](https://www.htslib.org/)).
 
+Taking a quick peek at our polish.sh script, we can see the major steps involved in the polishing of our assembly. I'll highlight them and break it down.
 
+```bash
+cp -i $ASSEMBLY/assembly.fasta $MAP
 
+bwa index $MAP/assembly.fasta
+
+bwa mem -t $THREADS $MAP/assembly.fasta $SHORT1 $SHORT2 | samtools view - -Sb | samtools sort - -@ $THREADS -o $MAP/mapped/mapping.bam
+
+samtools index $MAP/mapped/mapping.bam -@ $THREADS
+
+pilon --genome $MAP/assembly.fasta --frags $MAP/mapped/mapping.bam --fix all --changes --output $POLISH/polished
+
+```
+
+> **CODE BREAKDOWN**
+> 
+> - **`cp -i $ASSEMBLY/assembly.fasta $MAP`** - this interactively copies our assembly.fasta into another directory. Note that $ASSEMBLY and $MAP are directory variables in the script
+> - **`bwa index $MAP/assembly.fasta`** - use bwa to index our assembled genome
+> - **`bwa mem -t $THREADS $MAP/assembly.fasta $SHORT1 $SHORT2 | samtools view - -Sb | samtools sort - -@ $THREADS -o $MAP/mapped/mapping.bam`** - this maps the the genome to our short reads, then sends the output to be converted to a BAM file and finally sorts the BAM file
+> - **`samtools index $MAP/mapped/mapping.bam -@ $THREADS`** - index the sorted BAM file with sam tools
+> - **`pilon --genome $MAP/assembly.fasta --frags $MAP/mapped/mapping.bam --fix all --changes --output $POLISH/polished`** - finally we call pilon to do the genome polishing
+>   - **`--genome`** - specifies the genome file to be polished
+>   - **`--frags`** -  specifies our BAM file aligned to the genome
+>   - **`--fix all`** - specifies categories to fix, in this case all (snps, bases, indels, ...)
+>   - **`--changes`** - creates output.fasta detailing all the changes
+>   - **`--output`** - specifies prefix for the output files
+>
 
