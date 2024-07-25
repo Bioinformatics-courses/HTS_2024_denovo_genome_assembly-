@@ -1,7 +1,7 @@
 # HTS_2024_Denovo_genome_assembly-
 
 ## Introduction
-This project demonstrates the denovo genome assembly of the WGS of Lactobacillus plantarum strain JM015 as part of a course requirement. The goal is to assemble the genome using various bioinformatics tools and evaluate the quality of the assembly.
+This project demonstrates the denovo genome assembly of the WGS of Lactobacillus plantarum strain JM015 as part of a course requirement. The goal is to assemble the genome using various bioinformatics tools and evaluate the quality of the assembly. We're going to be 
 
 ## Setting up our working environment
 > **NOTE!**
@@ -74,9 +74,34 @@ Next, we examine the MultiQC report of our paired-end read (denovo/quality_check
 <center><img src="_static/fastqc_per.png" width="90%"></center>
 
 ## Quality Control
-Before we do proceed to assembly, we have to do some quality control. To do this, we use the script 
+Before we do proceed to assembly, we have to do some quality control. Our datasets from our quality check do not look to be in need of trimming, or adapter removal. So instead, we're just going to run some basic quality control on our short paired-end reads using the default qc parameters of the tool [fastp](https://github.com/OpenGene/fastp) in our script. It’s easy to use and lives up to its name (very fast).
 
+For our PacBio long read data, we're also going to be running very light QC, using the tool [Filtlong](https://github.com/rrwick/Filtlong) in our script. Filtlong is set in the script to remove any reads shorter than 1 kbp and also exclude the worst 5% of reads. The reason for this light QC is that the data is of high quality, so we just want to filter out the worst of the read. Filtlong prefers longer reads and aggressively filters out shorter ones. This generally benefits genome assembly but can be detrimental for small plasmids, hence why we only choose to exclude reads shorter than 1kpb.
 
+To run the quality_control.sh script, we navigate to our scripts folder, give execute permission to quality_control.sh and run the file.
+
+```bash
+cd scripts # assuming we're in our working folder
+sudo chmod +x quality_control.sh
+./quality_control.sh
+```
+This will generate 4 outputs for the short reads: 2 paired and 2 unpaired reads for our fastp QC, and a filtered long read file from the Filtlong QC, all located in the corresponding subdirectories under data/QC.
+The unpaired reads from the fastpc QC are very small compared to the the paired reads and that is very good. Taking a look at the fastp report generated, we can see that not much changed.
+
+## Assembly
+For the assembly, we'll be running the assembly.sh script in the scripts folder. The primary tool in this script is [Unicycler](https://github.com/rrwick/Unicycler). Unicycler is an assembly pipeline for bacterial genomes and comes highly recommended for hybrid assembly of bacteria.
+Unicycler uses [SPAdes] to produce graphs, which are made by performing a de Bruijn graph assembly with a range of different k-mer sizes. After generating a short-read assembly graph, Unicycler then uses the long reads to scaffold the graph to completion. It performs best when the short reads are deep and have even coverage.
+Unicycler hybrid assembly is run by passing our paired-end short reads, and our unpaired(if available) and the final secret sauce, the long read, to Unicycler, which is exactly what we have in out script. We run the script using:
+
+```bash
+cd scripts # assuming we're in our working folder
+sudo chmod +x assembly.sh
+./assembly.sh
+```
+
+Unicycler takes a long time to run hybrid assembly; with 4 threads given on my i5 5th gen cpu with 8gbs of ram, it took 11 hours to complete the hybrid assembly! The output is stored in assembly_output/ where we have the most important files: assembly.fasta (our assembled genome), assembly.gfa (our assembly graph) and unicycler.log (log file).
+
+## Polishing
 
 
 
