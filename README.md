@@ -74,7 +74,7 @@ Next, we examine the MultiQC report of our paired-end read (denovo/quality_check
 <center><img src="_static/fastqc_per.png" width="90%"></center>
 
 ## Quality Control
-
+Before we do proceed to assembly, we have to do some quality control. To do this, we use the script 
 
 
 
