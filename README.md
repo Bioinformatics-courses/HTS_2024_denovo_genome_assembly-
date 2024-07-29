@@ -1,8 +1,9 @@
 # HTS_2024_Denovo_genome_assembly-
 
 ## Introduction
-This project demonstrates the denovo genome assembly of the WGS of Lactobacillus plantarum strain JM015 as part of a course requirement. 
-De novo genome assembly is the process of constructing a genome sequence from scratch, without the use of a reference genome. This technique is crucial for studying organisms with unknown or highly variable genomes. The goal of this project is to assemble the aforementioned genome using various bioinformatics tools and evaluate the quality of the assembly. For this case, we're only going to be demonstrating a hybrid-assembly approach using short Illumina reads and long PacBio SMRT read.
+This project demonstrates the de novo genome assembly of the WGS of [*Lactiplantibacillus plantarum*](https://en.wikipedia.org/wiki/Lactiplantibacillus_plantarum) (formerly *Lactobacillus plantarum*) strain JM015 as part of a course requirement.
+
+De novo genome assembly is the process of constructing a genome sequence from scratch, without the use of a reference genome. This technique is crucial for studying organisms with unknown or highly variable genomes. The goal of this project is to assemble the aforementioned genome using various bioinformatics tools and evaluate the quality of the assembly. For this case, we are demonstrating a hybrid assembly approach using short Illumina reads and long PacBio SMRT reads. This approach combines the strengths of short-read sequencing, which offers high accuracy, with long-read sequencing, which provides longer contiguous sequences. These sequences are long enough to span most repeated regions of the genome and help reduce the gaps during assembly.
 
 ## Setting up our working environment
 > **NOTE!**
@@ -132,7 +133,34 @@ pilon --genome $MAP/assembly.fasta --frags $MAP/mapped/mapping.bam --fix all --c
 >   - **`--genome`** - specifies the genome file to be polished
 >   - **`--frags`** -  specifies our BAM file aligned to the genome
 >   - **`--fix all`** - specifies categories to fix, in this case all (snps, bases, indels, ...)
->   - **`--changes`** - creates output.fasta detailing all the changes
+>   - **`--changes`** - creates a file detailing all the changes in the output file
 >   - **`--output`** - specifies prefix for the output files
->
 
+The output file, polished.fasta can be found in "denovo/polishing"
+
+## Visualization
+[Bandage](https://rrwick.github.io/Bandage/) is a good program for visualizing de novo assembly graphs. It's what we're using in the next script that we'll run, visualize.sh. This script simply calls Bandage and pass our assembly.gfa as a parameter and adds the option to show the contig lengths in the image. Let's take a look at the main part of the script.
+
+```bash
+Bandage image $GRAPH_FILE $IMAGE_OUT --lengths
+```
+> **CODE BREAKDOWN**
+>
+> - **`Bandage`** - calls the Bandage program
+>   - **`image`** -  generate an image file of a graph
+>   - **`$GRAPH_FILE`** - variable for the path to the assembly graph
+>   - **`$IMAGE_OUT`** - output path "denovo/bandage_output"
+>   - **`lengths`** - this option adds the contig lenghts as labels to the image
+>  
+
+As usual, we'll run the script by:
+```bash
+cd scripts # assuming we're in our working folder
+sudo chmod +x visualize_assembly.sh
+./visualize_assembly.sh
+```
+
+The script can be adjusted as needed and options changed for specific visualization output.
+
+## Evaluation
+Finally, we get to to evaluate the the quality of our assembly. For this we'll be running the script, quast.sh. The primary program in this script is [Quast](https://github.com/ablab/quast)
