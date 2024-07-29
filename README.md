@@ -1,7 +1,8 @@
 # HTS_2024_Denovo_genome_assembly-
 
 ## Introduction
-This project demonstrates the denovo genome assembly of the WGS of Lactobacillus plantarum strain JM015 as part of a course requirement. The goal is to assemble the genome using various bioinformatics tools and evaluate the quality of the assembly. We're going to be 
+This project demonstrates the denovo genome assembly of the WGS of Lactobacillus plantarum strain JM015 as part of a course requirement. 
+De novo genome assembly is the process of constructing a genome sequence from scratch, without the use of a reference genome. This technique is crucial for studying organisms with unknown or highly variable genomes. The goal of this project is to assemble the aforementioned genome using various bioinformatics tools and evaluate the quality of the assembly. For this case, we're only going to be demonstrating a hybrid-assembly approach using short Illumina reads and long PacBio SMRT read.
 
 ## Setting up our working environment
 > **NOTE!**
