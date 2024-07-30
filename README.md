@@ -163,4 +163,18 @@ sudo chmod +x visualize_assembly.sh
 The script can be adjusted as needed and options changed for specific visualization output.
 
 ## Evaluation
-Finally, we get to to evaluate the the quality of our assembly. For this we'll be running the script, quast.sh. The primary program in this script is [Quast](https://github.com/ablab/quast)
+Finally, we get to to evaluate the the quality of our assembly. For this we'll be running the script, quast.sh. The primary program in this script is [Quast](https://github.com/ablab/quast), a genome assembly evaluation tool. From the Quast README, "The QUAST package works both with and without reference genomes. However, it is much more informative if at least a close reference genome is provided along with the assemblies". Given that the reason we do denovo assembly is usually because there is no reference genome, we don't necessarily need it for evaluation, but having a close reference helps to benchmark our assembly quality, so we'll be using one. It is also particularly useful that in the Quast report, there is also info on the assembly without comparison to the reference.
+
+We can get the reference genome of *Lactiplantibacillus plantarum* from [NCBI](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009913655.1/). Simply follow the link, download the fasta sequence and gff file, then copy to the working folder subdirectory "data/ref"
+
+We can also grab them using this code below
+```bash
+wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/913/655/GCF_009913655.1_ASM991365v1/GCF_009913655.1_ASM991365v1_genomic.fna.gz
+wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/913/655/GCF_009913655.1_ASM991365v1/GCF_009913655.1_ASM991365v1_genomic.gff.gz
+```
+
+## Discussion of Results
+
+## Challenges
+
+## Conclusion and Future Directions
