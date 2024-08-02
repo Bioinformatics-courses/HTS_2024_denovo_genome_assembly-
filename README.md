@@ -1,7 +1,7 @@
 # HTS_2024_Denovo_genome_assembly-
 
 ## Introduction
-This project demonstrates the de novo genome assembly of the WGS of [*Lactiplantibacillus plantarum*](https://en.wikipedia.org/wiki/Lactiplantibacillus_plantarum) (formerly *Lactobacillus plantarum*) strain JM015 as part of a course requirement.
+This project demonstrates the de novo genome assembly of the WGS of [*Lactiplantibacillus plantarum*](https://en.wikipedia.org/wiki/Lactiplantibacillus_plantarum) (formerly *Lactobacillus plantarum*) strain JM015 as part of the course requirement.
 
 De novo genome assembly is the process of constructing a genome sequence from scratch, without the use of a reference genome. This technique is crucial for studying organisms with unknown or highly variable genomes. The goal of this project is to assemble the aforementioned genome using various bioinformatics tools and evaluate the quality of the assembly. For this case, we are demonstrating a hybrid assembly approach using short Illumina reads and long PacBio SMRT reads. This approach combines the strengths of short-read sequencing, which offers high accuracy, with long-read sequencing, which provides longer contiguous sequences. These sequences are long enough to span most repeated regions of the genome and help reduce the gaps during assembly.
 
@@ -72,7 +72,7 @@ Taking a look at our script (properly commented of course), the script sets up t
 Visualizing the output of our long read quality check (denovo/quality_check_report/fastqc_output/SRR29409521_fastqc.html). The report shows overall high per base sequence quality, with median scores above 90 and only a low average dip to 66 towards the end.
 <center><img src="_static/long_read.png" width="90%"></center>
 
-Next, we examine the MultiQC report of our paired-end read (denovo/quality_check_report/multiqc_output/multiqc_report.html). We also see overall good reports here with the mean quality score generally hovering around the 35 mark.
+Next, we examine the MultiQC report of our paired-end read (denovo/quality_check_report/multiqc_output/multiqc_report.html). We also see overall good reports here with the mean quality score of the forward and reverse reads generally hovering around the 35 mark.
 <center><img src="_static/fastqc_per.png" width="90%"></center>
 
 ## Quality Control
@@ -172,9 +172,55 @@ We can also grab them using this code below
 wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/913/655/GCF_009913655.1_ASM991365v1/GCF_009913655.1_ASM991365v1_genomic.fna.gz
 wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/913/655/GCF_009913655.1_ASM991365v1/GCF_009913655.1_ASM991365v1_genomic.gff.gz
 ```
+Let's breakdown the main part of the script we'll be using "quast.sh"
+```bash
+quast $PILON_POLISHED_FILE -r $REFERENCE_GENOME -g $GFF_FILE -o $EVALUATION_OUT/ --threads $THREADS
+```
+> **CODE BREAKDOWN**
+>
+> - **`quast`** - calls the quast tool
+>   - **`$PILON_POLISHED_FILE`** -  path to our polished assembly file
+>   - **`$-r`** -  Reference genome file
+>   - **`-g`** - File with genomic feature coordinates in the reference
+>   - **`-o`** - Directory to store all result files
+>   - **`--threads`** - number of threads to be used
+>  
+
+Lets take a view at the results stored in "denovo/evaluation_output"
+
+<h5>This is our basic statistics without reference</h5>
+<center><img src="_static/stats_no_ref.png" width="70%"></center>
+
+<h5>This is stats with reference genome</h5>
+<center><img src="_static/stats_ref.png" width="70%"></center>
+
 
 ## Discussion of Results
+From the evaluation results above, we can observe some key metrics such as GC content, N50, L50, total length, and more. These will inform us of our assembly quality.
+
+The total length of the assembly is approximately 3.35 Mb. This falls within the range of 2.94 to 3.90 Mb observed across multiple L. plantarum strains. Specifically, strains have a mean genome size of around 3.32 Mb, which closely matches the 3.35 Mb we have in the assembly evaluation report.
+
+Next, we look at the GC content assembly, 44.5%, which is consistent with the range of 44.1% to 46.5% reported for this species. The typical GC content is around 44.2%, with that of our reference genome at 44.6% which is a good sign, and is indicative of a good assembly.
+
+Looking at the contig number and lengths, there 18 contigs with sizes larger than 1,000 bp. This number of contigs and the observed largest contig size (approximately 1.48 Mb) indicate a reasonably well-assembled genome, but not the best. 18 contigs still indicates fragmentation(possibly due to low coverage of the long reads used in scaffolding?), where even lower contigs would be better. But overall, a large contig size as we see here is indicative of good contiguity.
+
+The N50 value, which represents the length of the shortest contig at 50% of the total genome length is 1,187,525 bp and also, combined with the L50 of 2 suggest a good quality assembly with a good representation of large contigs: this tells us that two contigs account for half of the total assembly length, highlighting a concentration of sequence data in a few long contigs.
+
+Finally, observing our statisitc with reference, we can see that 84.447% of the genome was assembled in respect to the reference genome. We also see good quality indicated by the absence of ambiguous bases (N's) and a low duplication ratio (1.005). This is overall quite decent, but could be better where we can hope to get higher genomic assembly fraction.
+
+However, as shown in the reference statistic reports, there are a couple of misassemblies as well as indels and mismatches, which are significant. There are also about 615 kbp of the assembled genome that remained unaligned with the reference genome, reflecting potential strain-specific sequences or assembly artifacts. It is important to note that the reference genome used for evaluation belongs to a different strain of *Lactiplantibacillus plantarum*. This strain difference likely accounts for some of the observed structural variations, unaligned regions, and genetic polymorphisms. Further assemblies with different tools and methods may give us more information to make a conclusive stand.
+
 
 ## Challenges
+One of the major challenges faced in this project was computational complexity with many of the processes especially the hybrid assembly process taking hours! The lack of proper high performance computing access limited the scope of this project, where a better hybrid assembly result would have benefitted from multiple assembly runs using different tools and a final comparison evaluation made to pick out the best result.
+
+Also, interpretation of some metrics and appropriate choice of parameters to be used during some of these processes to optimize results were difficult, as the expertise was lacking on our end.
+
 
 ## Conclusion and Future Directions
+The de novo assembly of *Lactiplantibacillus plantarum* using hybrid assembly approach produced good results as seen from the GC content and N50 and other metrics, and provides a solid foundation for further genetic and functional studies. While the assembly is highly contiguous, the presence of structural variations, misassemblies and unaligned regions necessitates further analysis and validation. Reassembling the genome using different tools like [MEGAHIT](https://github.com/voutcn/megahit) and different/more stringent paramaters might produce better results on evaluation.
+
+For this particular assembly, further polishing and error correction using tools like Pilon or Racon, to reduce the number of sequencing errors and refine the assembly quality may benefit the assembly. Further analysis of the unaligned regions should be done to determine whether they contain novel genes, plasmids, or other genomic elements as these regions could be of particular interest for understanding the unique capabilities of the assembled strain.
+
+
+
