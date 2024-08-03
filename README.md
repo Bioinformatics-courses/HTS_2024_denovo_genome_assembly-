@@ -1,9 +1,9 @@
 # HTS_2024_Denovo_genome_assembly-
 
 ## Introduction
-This project demonstrates the de novo genome assembly of the WGS of [*Lactiplantibacillus plantarum*](https://en.wikipedia.org/wiki/Lactiplantibacillus_plantarum) (formerly *Lactobacillus plantarum*) strain JM015 as part of the course requirement.
+This project demonstrates the de novo genome assembly of the Whole Genome Sequence of [*Lactiplantibacillus plantarum*](https://en.wikipedia.org/wiki/Lactiplantibacillus_plantarum) (formerly *Lactobacillus plantarum*) strain JM015 as part of the course requirement.
 
-De novo genome assembly is the process of constructing a genome sequence from scratch, without the use of a reference genome. This technique is crucial for studying organisms with unknown or highly variable genomes. The goal of this project is to assemble the aforementioned genome using various bioinformatics tools and evaluate the quality of the assembly. For this case, we are demonstrating a hybrid assembly approach using short Illumina reads and long PacBio SMRT reads. This approach combines the strengths of short-read sequencing, which offers high accuracy, with long-read sequencing, which provides longer contiguous sequences. These sequences are long enough to span most repeated regions of the genome and help reduce the gaps during assembly.
+De novo genome assembly is the process of constructing a genome sequence from scratch, without the use of a reference genome. This technique is crucial for studying organisms with unknown or highly variable genomes. The goal of this project is to assemble the aforementioned genome using various bioinformatics tools and evaluate the quality of the assembly. For this case, we'll be demonstrating a hybrid assembly approach using short Illumina reads and long PacBio SMRT reads. This approach combines the strengths of short-read sequencing, which offers high accuracy, with long-read sequencing, which provides longer contiguous sequences. These sequences are long enough to span most repeated regions of the genome and help reduce the gaps during assembly.
 
 ## Setting up our working environment
 > **NOTE!**
@@ -18,16 +18,17 @@ cd
 git clone https://github.com/Bioinformatics-courses/HTS_2024_denovo_genome_assembly-.git
 mv HTS_2024_denovo_genome_assembly- denovo
 cd denovo
-mkdir -p data/raw
+mkdir -p data/{raw,ref}
 
 ```
 
 > **CODE BREAKDOWN**
 > 
 > - **`cd`** - changing to the $HOME directory (if not already there)
-> - **`mv HTS_2024_denovo_genome_assembly- denovo`** - renames the cloned dir to "denovo" (this dir is set in the sripts as the main working directory)
+> - **`git clone`** - clones the git repo url provided to current directory
+> - **`mv HTS_2024_denovo_genome_assembly- denovo`** - renames the cloned dir to "denovo" (this dir is set in the scripts as the main working directory)
 > - **`cd denovo`** - takes us to the denovo directory
-> - **`mkdir -p data/raw`** - creates data/raw where we will keep our fastq raw files
+> - **`mkdir -p data/raw`** - creates data/raw and data/ref where we will keep our fastq raw files and reference genome later, respectively.
 > 
 Next we create our conda environment from the yml file provided in the env folder and activate the environment
 ```bash
@@ -165,10 +166,11 @@ The script can be adjusted as needed and options changed for specific visualizat
 ## Evaluation
 Finally, we get to to evaluate the the quality of our assembly. For this we'll be running the script, quast.sh. The primary program in this script is [Quast](https://github.com/ablab/quast), a genome assembly evaluation tool. From the Quast README, "The QUAST package works both with and without reference genomes. However, it is much more informative if at least a close reference genome is provided along with the assemblies". Given that the reason we do denovo assembly is usually because there is no reference genome, we don't necessarily need it for evaluation, but having a close reference helps to benchmark our assembly quality, so we'll be using one. It is also particularly useful that in the Quast report, there is also info on the assembly without comparison to the reference.
 
-We can get the reference genome of *Lactiplantibacillus plantarum* from [NCBI](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009913655.1/). Simply follow the link, download the fasta sequence and gff file, then copy to the working folder subdirectory "data/ref"
+We can get the reference genome of *Lactiplantibacillus plantarum* from [NCBI](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009913655.1/). Simply follow the link, download the fasta sequence and gff file, then copy to the working folder subdirectory "data/ref".
 
 We can also grab them using this code below
 ```bash
+cd ~/denovo/data/ref
 wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/913/655/GCF_009913655.1_ASM991365v1/GCF_009913655.1_ASM991365v1_genomic.fna.gz
 wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/913/655/GCF_009913655.1_ASM991365v1/GCF_009913655.1_ASM991365v1_genomic.gff.gz
 ```
@@ -184,7 +186,8 @@ quast $PILON_POLISHED_FILE -r $REFERENCE_GENOME -g $GFF_FILE -o $EVALUATION_OUT/
 >   - **`-g`** - File with genomic feature coordinates in the reference
 >   - **`-o`** - Directory to store all result files
 >   - **`--threads`** - number of threads to be used
->  
+
+As usual we make the script executable and run it.
 
 Lets take a view at the results stored in "denovo/evaluation_output"
 
