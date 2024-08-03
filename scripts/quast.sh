@@ -1,4 +1,5 @@
 #!/bin/bash
+#This scripts runs evaluation on the polished assembly using QUAST
 
 #directory definition
 WORKDIR="$HOME/denovo"
@@ -7,8 +8,8 @@ EVALUATION_OUT="$WORKDIR/evaluation_output"
 
 #path to files
 PILON_POLISHED_FILE="$POLISH/polished.fasta"
-REFERENCE_GENOME="$WORKDIR/data/ref/*.fna"
-GFF_FILE="$WORKDIR/data/ref/*.gff"
+REFERENCE_GENOME="$WORKDIR/data/ref/*.fna*"
+GFF_FILE="$WORKDIR/data/ref/*.gff*"
 
 THREADS=4 #do adjust as per your pc needs
 
